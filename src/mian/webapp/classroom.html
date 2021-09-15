@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>教室管理系统</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <style>
+        .table-bordered {
+            border: 9px solid #23c9ce;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="title">
+        <div class="col-sm-12" style="text-align: center">
+            <h1>{{msg}}</h1>
+        </div>
+    </div>
+
+
+        <div class="check">
+            <input type="button" @click="addCr" value="添加教室">
+            <table width="100%" class="table table-striped table-bordered table-hover">
+                <tr>
+                    <th>教室名称</th>
+                    <th>所在机构</th>
+                    <th>详细地址</th>
+                    <th>上课地点</th>
+                    <th>座位数量</th>
+                    <th>操作</th>
+                </tr>
+                <tr v-for="classroom, index in classrooms">
+                    <td>{{classroom.name}}</td>
+                    <td>{{classroom.department}}</td>
+                    <td>{{classroom.address}}</td>
+                    <td>{{classroom.building}}</td>
+                    <td>{{classroom.seat}}</td>
+                    <td>
+                        <a href="javascript:" @click="delCR(index)">删除</a>&nbsp;&nbsp;&nbsp;
+                        <a href="javascript:" @click="detailCR(index)">修改</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    <add_template v-show="add_cr">
+        <div class="form">
+            <div class="col-sm-12">
+                <form action="">
+                    <div v-show="classroom.name"></div>
+                    <div>
+                        <label>教室名称</label>
+                        <input type="text" v-model="classroom.name">
+
+                        <label>机构</label>
+                        <input type="text" v-model="classroom.department">
+
+                        <label>地址</label>
+                        <input type="text" v-model="classroom.address">
+
+                        <label>教学楼</label>
+                        <input type="text" v-model="classroom.building">
+
+                        <label>座位</label>
+                        <input type="text" v-model="classroom.seat">
+                        <input type="button" @click="save" value="提交信息">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </add_template>
+    <change_template v-show="change_cr">
+        <div class="form">
+            <div class="col-sm-12">
+                <form action="">
+                    <div v-show="temp.name"></div>
+                    <div>
+                        <label>教室名称</label>
+                        <input type="text" v-model="temp.name">
+
+                        <label>机构</label>
+                        <input type="text" v-model="temp.department">
+
+                        <label>地址</label>
+                        <input type="text" v-model="temp.address">
+
+                        <label>教学楼</label>
+                        <input type="text" v-model="temp.building">
+
+                        <label>座位</label>
+                        <input type="text" v-model="temp.seat">
+                        <input type="button" @click="notSave" value="取消修改">
+                        <input type="button" @click="saveChange" value="确定修改">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </change_template>
+
+</div>
+</body>
+
+
+</html>
+<script src="js/vue.js"></script>
+<script>
+    let add_template
+    let change_template
+    const app = new Vue({
+        el: "#app",
+        data: {
+            add_cr:false,
+            change_cr:false,
+            msg: "教室管理系统",
+            classrooms: [
+                {name: "C303", department: "AA", address: "北师珠", building: "木铎楼", seat: 60},
+                {name: "A101", department: "XX", address: "北师珠", building: "丽泽楼", seat: 150},
+            ],
+            classroom: {},
+            temp:{},
+        },
+        components:{
+            add_template:add_template,
+            change_template:change_template,
+        },
+        methods: {
+            addCr() {
+                this.classroom = {};
+                this.add_cr = true;
+            },
+            notSave(){
+                this.classrooms.push(this.classroom);
+                this.temp = this.classroom;
+                this.change_cr = false;
+            },
+            save() {
+                if (!this.classroom.name) {
+                    alert('请输入教室名称');
+                    return false;
+                }
+                if (!this.classroom.department) {
+                    alert('请输入教室所属部门');
+                    return false;
+                }
+                if (!this.classroom.address) {
+                    alert('请输入教室地址');
+                    return false;
+                }
+                if (!this.classroom.building) {
+                    alert('请输入教室所属教学楼');
+                    return false;
+                }
+                if (!this.classroom.seat) {
+                    alert('请输入教室座位数量');
+                    return false;
+                }
+                this.classrooms.push(this.classroom);
+                this.classroom = {};
+                this.add_cr = false;
+            },
+            saveChange(){
+                if (!this.temp.name) {
+                    alert('请输入教室名称');
+                    return false;
+                }
+                if (!this.temp.department) {
+                    alert('请输入教室所属部门');
+                    return false;
+                }
+                if (!this.temp.address) {
+                    alert('请输入教室地址');
+                    return false;
+                }
+                if (!this.temp.building) {
+                    alert('请输入教室所属教学楼');
+                    return false;
+                }
+                if (!this.temp.seat) {
+                    alert('请输入教室座位数量');
+                    return false;
+                }
+                this.classrooms.push(this.temp);
+                this.temp = {};
+                this.change_cr = false;
+            },
+            delCR(idx) {
+                if (window.confirm("您确定要删除吗?")) {
+                    this.classrooms.splice(idx, 1);
+                }
+            },
+            detailCR(idx) {
+                this.temp = JSON.parse((JSON.stringify(this.classrooms[idx])));
+                this.classroom= JSON.parse((JSON.stringify(this.classrooms[idx])));
+                this.change_cr = true;
+                this.classrooms.splice(idx, 1);
+            },
+        }
+    })
+</script>
